@@ -4,12 +4,11 @@ import {
     SIWESession,
     createSIWEConfig,
     formatMessage,
-    Web3ModalSIWEClient,
-} from "@web3modal/siwe";
-import { SIWEMessageArgs } from "@web3modal/siwe/dist/types/core/utils/TypeUtils";
+    AppKitSIWEClient
+} from "@reown/appkit-siwe";
 
 
-async function getMessageParams(): Promise<SIWEMessageArgs> {
+async function getMessageParams() {
     return {
         domain: window.location.host,
         uri: window.location.origin,
@@ -23,11 +22,9 @@ async function getNonce(address?: string): Promise<string> {
     return address + "nonce";
 }
 
-async function getSession(): Promise<SIWESession> {
-    return {
-        address: "0x1",
-        chainId: 1
-    };
+async function getSession(): Promise<SIWESession | null> {
+    console.log("getSession");
+    return null;
 }
 
 async function verifyMessage({message, signature}: SIWEVerifyMessageArgs): Promise<boolean> {
@@ -39,7 +36,7 @@ async function signOut(): Promise<boolean> {
     return true;
 }
 
-export const siweConfig: Web3ModalSIWEClient = createSIWEConfig({
+export const siweConfig: AppKitSIWEClient = createSIWEConfig({
     getMessageParams,
     createMessage: ({ address, ...args }: SIWECreateMessageArgs) => formatMessage(args, address),
     getNonce,

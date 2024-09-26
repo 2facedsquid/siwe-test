@@ -1,8 +1,8 @@
-import { createWeb3Modal } from '@web3modal/wagmi/react'
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
+import { createAppKit } from '@reown/appkit/react'
+import { mainnet, sepolia } from '@reown/appkit/networks'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
 import { WagmiProvider } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { siweConfig } from './siwe'
 
@@ -20,28 +20,27 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 
-const chains = [mainnet, sepolia] as const
-const config = defaultWagmiConfig({
-  chains,
-  projectId,
-  enableWalletConnect: true,
-  enableInjected: true,
+const networks = [mainnet, sepolia];
+
+const wagmiAdapter = new WagmiAdapter({
+  networks,
+  projectId
+})
+
+createAppKit({
+  adapters: [wagmiAdapter],
+  networks,
   metadata,
-})
-
-
-// 3. Create modal
-createWeb3Modal({
-    wagmiConfig: config,
-    projectId,
-    siweConfig,
-    enableAnalytics: true, // Optional - defaults to your Cloud configuration
-    enableOnramp: true // Optional - false as default
-})
+  projectId,
+  features: {
+    analytics: true,
+  },
+  siweConfig
+ })
 
 export function Web3ModalProvider({ children }: { children: React.ReactNode }) {
     return (
-        <WagmiProvider config={config}>
+        <WagmiProvider config={wagmiAdapter.wagmiConfig}>
             <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
         </WagmiProvider>
     )
